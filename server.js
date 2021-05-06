@@ -20,14 +20,22 @@ mongoose.connect(process.env.MONGODB_URI||murl,connectionParams)
 app.set('view engine', 'ejs')
 app.use(express.urlencoded({extended:false}))
 app.get('/', async(req,res) =>{
-    const shorturls= await ShortUrl.find()
-    res.render('index', { shorturls:shorturls})
+    const shorturls= await ShortUrl.aggregate([{$sample:{size:10}}])
+    var passedVariable = req.query.valid;
+    res.render('index', { shorturls:shorturls,surl:passedVariable })
+    
 })
 app.post('/shortUrls', async (req,res)=> {
     const uid= shortid.generate();
-    const surl= baseUrl+uid;
-    await ShortUrl.create({full: req.body.fullurl, short: surl })
-    res.redirect('/')
+    var surl= baseUrl+uid;
+    const fullu= await ShortUrl.findOne({ full: req.body.fullurl})
+
+    if( fullu==null ) await ShortUrl.create({full: req.body.fullurl, short: surl })
+    else
+    surl=fullu.short
+    
+    var string = encodeURIComponent(surl);
+    res.redirect('/?valid=' + string);
 })
 app.get('/:shorturl', async(req,res) => {
     const shorturl= await ShortUrl.findOne({ short: baseUrl+req.params.shorturl})
