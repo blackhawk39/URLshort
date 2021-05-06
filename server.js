@@ -1,8 +1,10 @@
 const express = require('express')
 const app = express()
 const mongoose=require('mongoose')
+const shortid = require('shortid')
 const ShortUrl =require('./models/url')
 const murl = 'mongodb+srv://srbh:mangoatlas@cluster0.yotf1.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+const baseUrl= "https://poxyurl.herokuapp.com/"
 const connectionParams={
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -22,8 +24,16 @@ app.get('/', async(req,res) =>{
     res.render('index', { shorturls:shorturls})
 })
 app.post('/shortUrls', async (req,res)=> {
-    await ShortUrl.create({full: req.body.fullurl })
+    const uid= shortid.generate();
+    const surl= baseUrl+uid;
+    await ShortUrl.create({full: req.body.fullurl, short: surl })
     res.redirect('/')
 })
-// app.get('/:ShortUrl', async(req,res) => {})
+app.get('/:shorturl', async(req,res) => {
+    const shorturl= await ShortUrl.findOne({ short: baseUrl+req.params.shorturl})
+     if( shorturl==null ) return res.sendStatus(404)
+    shorturl.clicks++
+    shorturl.save()
+    res.redirect(shorturl.full)
+})
 app.listen(process.env.PORT || 4000)
