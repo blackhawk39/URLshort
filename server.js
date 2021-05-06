@@ -8,7 +8,7 @@ const connectionParams={
     useCreateIndex: true,
     useUnifiedTopology: true 
 }
-mongoose.connect(murl,connectionParams)
+mongoose.connect(process.env.MONGODB_URI||murl,connectionParams)
     .then( () => {
         console.log('Connected to database ')
     })
@@ -25,4 +25,5 @@ app.post('/shortUrls', async (req,res)=> {
     await ShortUrl.create({full: req.body.fullurl })
     res.redirect('/')
 })
+// app.get('/:ShortUrl', async(req,res) => {})
 app.listen(process.env.PORT || 4000)
