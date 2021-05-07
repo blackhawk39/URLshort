@@ -3,7 +3,7 @@ const app = express()
 const mongoose=require('mongoose')
 const shortid = require('shortid')
 const ShortUrl =require('./models/url')
-const murl = 'mongodb+srv://srbh:mangoatlas@cluster0.yotf1.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+const murl = 'mongodb+srv://srbh:<password>@cluster0.yotf1.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
 const baseUrl= "https://poxyurl.herokuapp.com/"
 const connectionParams={
     useNewUrlParser: true,
